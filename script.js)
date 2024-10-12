@@ -1,0 +1,96 @@
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+const bodyTypeSelect = document.getElementById('bodyType');
+const outfitSelect = document.getElementById('outfit');
+const petSelect = document.getElementById('pet');
+
+const connectWalletButton = document.getElementById('connectWalletButton');
+const mintButton = document.getElementById('mintButton');
+
+let account = null;
+
+// MetaMask connection
+async function connectWallet() {
+    if (window.ethereum) {
+        try {
+            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+            account = accounts[0];
+            console.log('Connected account:', account);
+            connectWalletButton.innerText = 'Wallet Connected';
+        } catch (error) {
+            console.error('User rejected the connection:', error);
+        }
+    } else {
+        alert('MetaMask is not installed!');
+    }
+}
+
+// Function to draw character based on selected options
+function drawCharacter() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    drawBody();
+    drawArms();
+    drawLegs();
+    drawOutfit();
+    drawHead();
+    drawPet();
+}
+
+// Drawing different body types
+function drawBody() {
+    const bodyType = bodyTypeSelect.value;
+    ctx.fillStyle = '#FFCBA4'; // Skin color
+
+    switch (bodyType) {
+        case 'slim':
+            ctx.fillRect(130, 100, 40, 90); // Body
+            break;
+        case 'average':
+            ctx.fillRect(120, 100, 60, 100); // Body
+            break;
+        case 'muscular':
+            ctx.fillRect(110, 100, 80, 110); // Body
+            break;
+    }
+}
+
+// Drawing arms, legs, outfit, and head are the same as before
+
+// Minting the character as NFT (with dummy contract interaction)
+async function mintCharacter() {
+    if (!account) {
+        alert('Please connect your wallet first!');
+        return;
+    }
+
+    // Dummy interaction for demonstration (Replace with real contract interaction)
+    try {
+        // Example transaction (sending 0.001 ETH)
+        const transactionParameters = {
+            to: '0xYourSmartContractAddress', // Contract address to send the minting request
+            from: account,
+            value: '0x' + (0.001 * 10 ** 18).toString(16), // Send 0.001 ETH as minting fee
+        };
+
+        await ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [transactionParameters],
+        });
+
+        alert('Character minted successfully!');
+    } catch (error) {
+        console.error('Minting failed:', error);
+    }
+}
+
+// Event listeners for wallet connection and minting
+connectWalletButton.addEventListener('click', connectWallet);
+mintButton.addEventListener('click', mintCharacter);
+
+bodyTypeSelect.addEventListener('change', drawCharacter);
+outfitSelect.addEventListener('change', drawCharacter);
+petSelect.addEventListener('change', drawCharacter);
+
+drawCharacter(); // Initial draw
